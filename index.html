@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aradhya Verma — UI/UX Designer &amp; CS Student</title>
+  <meta name="description" content="Portfolio of Aradhya Verma — UI/UX designer and Computer Science student crafting experimental, high-impact digital experiences.">
+
+  <!-- Google Fonts: Syne (Headings), Space Grotesk (Body), JetBrains Mono (Technical Accents) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- Custom Cursor Elements -->
+  <div class="custom-cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+  <div class="custom-cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Ambient Background Canvas / Grid Overlay -->
+  <div class="bg-noise" aria-hidden="true"></div>
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <header class="site-header" id="header">
+    <div class="header-inner">
+      <a href="#hero" class="brand-mark" aria-label="Aradhya Verma Home">
+        <span class="brand-monogram">AV</span>
+        <span class="brand-role">UI/UX &times; CS</span>
+      </a>
+
+      <div class="status-indicator" aria-label="Availability Status">
+        <span class="status-pulse"></span>
+        <span class="status-text">Available for 2026/27 opportunities</span>
+      </div>
+
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#about" class="nav-link"><span class="nav-num">01</span> About</a>
+        <a href="#projects" class="nav-link"><span class="nav-num">02</span> Projects</a>
+        <a href="#skills" class="nav-link"><span class="nav-num">03</span> Skills</a>
+        <a href="#education" class="nav-link"><span class="nav-num">04</span> Education</a>
+        <a href="#contact" class="nav-link"><span class="nav-num">05</span> Contact</a>
+      </nav>
+
+      <a href="#contact" class="header-cta-btn">Let's Talk</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- SECTION 1: HERO -->
+    <section class="hero-section" id="hero">
+      <div class="hero-container">
+        <!-- Top Metadata Row -->
+        <div class="hero-meta reveal-item">
+          <div class="meta-tag">
+            <span class="tag-bracket">[</span>
+            <span class="tag-label">PORTFOLIO &bull; VOL. 01</span>
+            <span class="tag-bracket">]</span>
+          </div>
+          <div class="meta-location">
+            <span>28&deg;36&prime;N &bull; 77&deg;12&prime;E</span>
+            <span class="meta-separator">/</span>
+            <span>HYPER-DIGITAL INTERFACES</span>
+          </div>
+        </div>
+
+        <!-- Huge Editorial Name Display -->
+        <div class="hero-title-wrapper">
+          <h1 class="hero-title">
+            <span class="title-row title-row-top reveal-item">
+              <span class="letter-accent">A</span>RADHYA
+            </span>
+            <span class="title-row title-row-bottom reveal-item">
+              VERMA<span class="accent-period">.</span>
+            </span>
+          </h1>
+        </div>
+
+        <!-- Positioning Statement -->
+        <div class="hero-statement-wrapper reveal-item">
+          <div class="statement-bracket-box">
+            <span class="statement-quote">[ welcome to my world ]</span>
+          </div>
+          <p class="hero-subtext">
+            UI/UX Enthusiast &amp; Computer Science Student merging bold aesthetic engineering, intuitive systems, and experimental digital interactions.
+          </p>
+        </div>
+
+        <!-- Interactive Hero Footer / Scroll Cue -->
+        <div class="hero-footer reveal-item">
+          <div class="hero-scroll-cue">
+            <div class="scroll-track">
+              <div class="scroll-thumb"></div>
+            </div>
+            <span class="scroll-text">EXPLORE THE ARCHIVE</span>
+          </div>
+
+          <div class="hero-quick-stats">
+            <div class="stat-pill">
+              <span class="stat-accent">&curren;</span>
+              <span>EXPERIMENTAL DESIGN</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-accent">&plus;</span>
+              <span>ENGINEERING MINDSET</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
