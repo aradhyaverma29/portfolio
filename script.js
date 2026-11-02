@@ -1,13 +1,14 @@
 /**
  * ARADHYA VERMA — PORTFOLIO SCRIPT
  * Interactions: Custom fluid cursor, IntersectionObserver scroll reveals,
- * and hover states. Lightweight & high performance.
+ * project hover micro-interactions, and safe placeholder link handling.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   initCustomCursor();
   initScrollReveal();
   initHeaderScroll();
+  initPlaceholderLinks();
 });
 
 /* --------------------------------------------------------------------------
@@ -30,7 +31,6 @@ function initCustomCursor() {
   let mouseY = -100;
   let ringX = -100;
   let ringY = -100;
-  let isHovered = false;
 
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
@@ -51,7 +51,7 @@ function initCustomCursor() {
 
   // Hover detection for interactive elements
   function attachHoverListeners() {
-    const interactiveElements = document.querySelectorAll('a, button, input, textarea, [data-hover]');
+    const interactiveElements = document.querySelectorAll('a, button, input, textarea, .skill-pill, .project-card, [data-hover]');
     interactiveElements.forEach((el) => {
       el.addEventListener('mouseenter', () => {
         document.body.classList.add('cursor-hover');
@@ -63,8 +63,6 @@ function initCustomCursor() {
   }
 
   attachHoverListeners();
-
-  // Re-attach whenever DOM updates might happen
   window.attachCursorHoverListeners = attachHoverListeners;
 
   // Fade out when mouse leaves window
@@ -89,17 +87,16 @@ function initScrollReveal() {
 
   const observerOptions = {
     root: null,
-    rootMargin: '0px 0px -60px 0px',
-    threshold: 0.15
+    rootMargin: '0px 0px -50px 0px',
+    threshold: 0.12
   };
 
   const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach((entry, idx) => {
       if (entry.isIntersecting) {
-        // Stagger reveal slightly if multiple items enter together
         setTimeout(() => {
           entry.target.classList.add('is-revealed');
-        }, idx * 60);
+        }, idx * 40);
         obs.unobserve(entry.target);
       }
     });
@@ -123,7 +120,21 @@ function initHeaderScroll() {
     } else {
       header.classList.remove('scrolled');
       header.style.borderBottomColor = 'var(--border-subtle)';
-      header.style.background = 'rgba(8, 8, 8, 0.75)';
+      header.style.background = 'rgba(8, 8, 8, 0.8)';
     }
   }, { passive: true });
+}
+
+/* --------------------------------------------------------------------------
+   4. Placeholder link safety handler
+   -------------------------------------------------------------------------- */
+function initPlaceholderLinks() {
+  // Prevent jumping to page top when clicking placeholder links (href="#")
+  const placeholderLinks = document.querySelectorAll('a[href="#"]');
+  placeholderLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.info('Placeholder link clicked: update this URL in index.html once live link is available.');
+    });
+  });
 }

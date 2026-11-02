@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aradhya Verma — UI/UX Designer &amp; CS Student</title>
-  <meta name="description" content="Portfolio of Aradhya Verma — UI/UX designer and Computer Science student crafting experimental, high-impact digital experiences.">
+  <title>Aradhya Verma — Frontend Developer &amp; UI/UX Designer</title>
+  <meta name="description" content="Portfolio of Aradhya Verma — Frontend developer, UI/UX designer, and IT student at IIIT Lucknow.">
 
-  <!-- Google Fonts: Syne (Headings), Space Grotesk (Body), JetBrains Mono (Technical Accents) -->
+  <!-- Google Fonts: Syne (Editorial Headings), Space Grotesk (Body), JetBrains Mono (Technical Accents) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -18,21 +18,21 @@
   <div class="custom-cursor-dot" id="cursor-dot" aria-hidden="true"></div>
   <div class="custom-cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
-  <!-- Ambient Background Canvas / Grid Overlay -->
+  <!-- Background Ambience & Noise -->
   <div class="bg-noise" aria-hidden="true"></div>
   <div class="ambient-glow" aria-hidden="true"></div>
 
-  <!-- Navigation -->
+  <!-- Site Navigation -->
   <header class="site-header" id="header">
     <div class="header-inner">
       <a href="#hero" class="brand-mark" aria-label="Aradhya Verma Home">
         <span class="brand-monogram">AV</span>
-        <span class="brand-role">UI/UX &times; CS</span>
+        <span class="brand-role">IIIT LUCKNOW</span>
       </a>
 
-      <div class="status-indicator" aria-label="Availability Status">
+      <div class="status-indicator" aria-label="Academic &amp; Project Status">
         <span class="status-pulse"></span>
-        <span class="status-text">Available for 2026/27 opportunities</span>
+        <span class="status-text">B.Tech IT &bull; Designing &amp; Coding</span>
       </div>
 
       <nav class="nav-links" aria-label="Main Navigation">
@@ -40,7 +40,8 @@
         <a href="#projects" class="nav-link"><span class="nav-num">02</span> Projects</a>
         <a href="#skills" class="nav-link"><span class="nav-num">03</span> Skills</a>
         <a href="#education" class="nav-link"><span class="nav-num">04</span> Education</a>
-        <a href="#contact" class="nav-link"><span class="nav-num">05</span> Contact</a>
+        <a href="#beyond" class="nav-link"><span class="nav-num">05</span> Beyond</a>
+        <a href="#contact" class="nav-link"><span class="nav-num">06</span> Contact</a>
       </nav>
 
       <a href="#contact" class="header-cta-btn">Let's Talk</a>
@@ -48,68 +49,536 @@
   </header>
 
   <main id="main-content">
-    <!-- SECTION 1: HERO -->
+    <!-- ======================================================================
+         SECTION 1: HERO
+         ====================================================================== -->
     <section class="hero-section" id="hero">
       <div class="hero-container">
-        <!-- Top Metadata Row -->
+        <!-- Top Meta Line -->
         <div class="hero-meta reveal-item">
           <div class="meta-tag">
             <span class="tag-bracket">[</span>
-            <span class="tag-label">PORTFOLIO &bull; VOL. 01</span>
+            <span class="tag-label">PORTFOLIO &bull; 2025–2029</span>
             <span class="tag-bracket">]</span>
           </div>
           <div class="meta-location">
-            <span>28&deg;36&prime;N &bull; 77&deg;12&prime;E</span>
+            <span>IIIT LUCKNOW</span>
             <span class="meta-separator">/</span>
-            <span>HYPER-DIGITAL INTERFACES</span>
+            <span>DESIGN &times; CODE</span>
           </div>
         </div>
 
-        <!-- Huge Editorial Name Display -->
+        <!-- Huge Editorial Name -->
         <div class="hero-title-wrapper">
           <h1 class="hero-title">
-            <span class="title-row title-row-top reveal-item">
-              <span class="letter-accent">A</span>RADHYA
-            </span>
-            <span class="title-row title-row-bottom reveal-item">
-              VERMA<span class="accent-period">.</span>
-            </span>
+            <span class="title-row title-row-top reveal-item"><span class="letter-accent">A</span>RADHYA</span>
+            <span class="title-row title-row-bottom reveal-item">VERMA<span class="accent-period">.</span></span>
           </h1>
         </div>
 
-        <!-- Positioning Statement -->
+        <!-- Hero Positioning Statement & Subtext -->
         <div class="hero-statement-wrapper reveal-item">
           <div class="statement-bracket-box">
             <span class="statement-quote">[ welcome to my world ]</span>
           </div>
-          <p class="hero-subtext">
-            UI/UX Enthusiast &amp; Computer Science Student merging bold aesthetic engineering, intuitive systems, and experimental digital interactions.
-          </p>
+          <div class="hero-copy-block">
+            <p class="hero-primary-statement">
+              I design interfaces people enjoy and build them in code.
+            </p>
+            <p class="hero-subtext">
+              Frontend developer &bull; UI/UX designer &bull; IT student at IIIT Lucknow
+            </p>
+          </div>
         </div>
 
-        <!-- Interactive Hero Footer / Scroll Cue -->
+        <!-- Hero Footer / Bottom Bar -->
         <div class="hero-footer reveal-item">
-          <div class="hero-scroll-cue">
+          <a href="#about" class="hero-scroll-cue" aria-label="Scroll to About section">
             <div class="scroll-track">
               <div class="scroll-thumb"></div>
             </div>
-            <span class="scroll-text">EXPLORE THE ARCHIVE</span>
-          </div>
+            <span class="scroll-text">EXPLORE WORK</span>
+          </a>
 
           <div class="hero-quick-stats">
             <div class="stat-pill">
               <span class="stat-accent">&curren;</span>
-              <span>EXPERIMENTAL DESIGN</span>
+              <span>UI/UX DESIGN</span>
             </div>
             <div class="stat-pill">
               <span class="stat-accent">&plus;</span>
-              <span>ENGINEERING MINDSET</span>
+              <span>FRONTEND CODE</span>
             </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- ======================================================================
+         SECTION 2: ABOUT
+         ====================================================================== -->
+    <section class="section-container" id="about">
+      <div class="section-header reveal-item">
+        <span class="section-eyebrow">[ 01 // ABOUT ]</span>
+        <h2 class="section-title">Where Design <span class="text-accent">&amp;</span> Code Meet</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card reveal-item">
+          <div class="card-indicator">
+            <span class="indicator-dot"></span>
+            <span class="indicator-label">BACKGROUND</span>
+          </div>
+          <p class="about-lead">
+            I'm a second-year B.Tech student in Information Technology at IIIT Lucknow, and I like working where design and code meet. I started with the fundamentals (data structures, databases, object-oriented programming) and found that what I enjoy most is turning an idea into something people can click, scroll and understand.
+          </p>
+        </div>
+
+        <div class="about-card reveal-item">
+          <div class="card-indicator">
+            <span class="indicator-dot"></span>
+            <span class="indicator-label">COLLABORATION &amp; PERSPECTIVE</span>
+          </div>
+          <p class="about-body">
+            Outside the classroom I'm part of the Design Wing of Axios, our technical club, the Fine Art Club, and the Entrepreneurship Cell. They've taught me that good work comes from creative thinking, teamwork and managing time well, and that a good interface comes from the same habits.
+          </p>
+          <div class="about-tags-row">
+            <span class="badge-tag">Creative Thinking</span>
+            <span class="badge-tag">Teamwork</span>
+            <span class="badge-tag">Time Management</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: PROJECTS
+         ====================================================================== -->
+    <section class="section-container" id="projects">
+      <div class="section-header reveal-item">
+        <span class="section-eyebrow">[ 02 // SELECTED WORKS ]</span>
+        <h2 class="section-title">Featured Projects</h2>
+      </div>
+
+      <div class="projects-list">
+        <!-- Project 1: ResumeXray -->
+        <article class="project-card reveal-item" data-project="resumexray">
+          <div class="project-content">
+            <div class="project-top-meta">
+              <span class="project-index">01 / 02</span>
+              <span class="project-role-badge">UI/UX Design &bull; Frontend Development</span>
+            </div>
+
+            <h3 class="project-name">ResumeXray</h3>
+            <p class="project-tagline">AI resume analyzer</p>
+
+            <p class="project-desc">
+              Most resumes get filtered out by ATS software before a person reads them. ResumeXray helps fix that. It analyzes a resume for ATS compatibility, matches it to a job role, and points out missing keywords and skill gaps.
+            </p>
+            <p class="project-desc-secondary">
+              I led the UI/UX design and frontend development, creating a responsive interface where users upload a resume and get personalized, real-time suggestions, with reusable components throughout.
+            </p>
+
+            <div class="project-tech-stack">
+              <span class="tech-pill">JavaScript</span>
+              <span class="tech-pill">React</span>
+              <span class="tech-pill">Tailwind CSS</span>
+            </div>
+
+            <div class="project-links-row">
+              <!-- TODO: Add live link -->
+              <a href="#" class="project-link project-link-primary" target="_blank" rel="noopener noreferrer" aria-label="ResumeXray Live Demo">
+                <span>Live Demo</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+              </a>
+              <!-- TODO: Add GitHub link -->
+              <a href="#" class="project-link project-link-secondary" target="_blank" rel="noopener noreferrer" aria-label="ResumeXray GitHub Repository">
+                <span>GitHub Repo</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Project Visual Preview Mockup (Pure CSS & SVG Generative Visual) -->
+          <div class="project-preview" aria-hidden="true">
+            <div class="preview-backdrop preview-rx">
+              <div class="preview-chrome">
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+                <span class="preview-url">resumexray.ai // analyzer</span>
+              </div>
+              <div class="preview-visual">
+                <div class="preview-hud">
+                  <div class="hud-score-ring">
+                    <span class="hud-score">94%</span>
+                    <span class="hud-label">ATS MATCH</span>
+                  </div>
+                  <div class="hud-bars">
+                    <div class="hud-bar bar-1"></div>
+                    <div class="hud-bar bar-2"></div>
+                    <div class="hud-bar bar-3"></div>
+                  </div>
+                </div>
+                <div class="preview-chip-group">
+                  <span class="preview-chip chip-active">Keyword Alignment</span>
+                  <span class="preview-chip">Skill Gaps Fixed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Project 2: DailyDairy -->
+        <article class="project-card reveal-item" data-project="dailydairy">
+          <div class="project-content">
+            <div class="project-top-meta">
+              <span class="project-index">02 / 02</span>
+              <span class="project-role-badge">Frontend Development &bull; Course Project</span>
+            </div>
+
+            <h3 class="project-name">DailyDairy</h3>
+            <p class="project-tagline">dairy e-commerce frontend</p>
+
+            <p class="project-desc">
+              For our Web Development and Application course, my team built the frontend of a dairy e-commerce platform. Users can browse products, add them to a cart, and move through the site easily.
+            </p>
+            <p class="project-desc-secondary">
+              I worked with the team to structure reusable components so the interface stayed consistent and easy to extend.
+            </p>
+
+            <div class="project-tech-stack">
+              <span class="tech-pill">React</span>
+              <span class="tech-pill">JavaScript</span>
+              <span class="tech-pill">Tailwind CSS</span>
+              <span class="tech-pill">Bootstrap</span>
+            </div>
+
+            <div class="project-links-row">
+              <!-- TODO: Add live link -->
+              <a href="#" class="project-link project-link-primary" target="_blank" rel="noopener noreferrer" aria-label="DailyDairy Live Demo">
+                <span>Live Demo</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+              </a>
+              <!-- TODO: Add GitHub link -->
+              <a href="#" class="project-link project-link-secondary" target="_blank" rel="noopener noreferrer" aria-label="DailyDairy GitHub Repository">
+                <span>GitHub Repo</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Project Visual Preview Mockup -->
+          <div class="project-preview" aria-hidden="true">
+            <div class="preview-backdrop preview-dd">
+              <div class="preview-chrome">
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+                <span class="preview-url">dailydairy.store // cart</span>
+              </div>
+              <div class="preview-visual">
+                <div class="preview-store-grid">
+                  <div class="store-item item-1">
+                    <div class="store-badge">Organic Milk</div>
+                    <div class="store-line"></div>
+                  </div>
+                  <div class="store-item item-2">
+                    <div class="store-badge">Cart [2 Items]</div>
+                    <div class="store-line"></div>
+                  </div>
+                </div>
+                <div class="store-checkout-preview">
+                  <span>Seamless Checkout Stream</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: SKILLS
+         ====================================================================== -->
+    <section class="section-container" id="skills">
+      <div class="section-header reveal-item">
+        <span class="section-eyebrow">[ 03 // TECHNICAL ARSENAL ]</span>
+        <h2 class="section-title">Skills &amp; Capabilities</h2>
+      </div>
+
+      <div class="skills-creative-grid">
+        <!-- Build -->
+        <div class="skill-category-card reveal-item">
+          <div class="skill-card-head">
+            <span class="skill-prefix">// BUILD</span>
+            <span class="skill-icon">&lt;/&gt;</span>
+          </div>
+          <p class="skill-card-subtitle">Interface &amp; Web Systems</p>
+          <div class="skill-pills-wrap">
+            <span class="skill-pill">HTML</span>
+            <span class="skill-pill">CSS</span>
+            <span class="skill-pill">JavaScript</span>
+            <span class="skill-pill highlight-pill">React.js</span>
+            <span class="skill-pill">Tailwind CSS</span>
+          </div>
+        </div>
+
+        <!-- Code -->
+        <div class="skill-category-card reveal-item">
+          <div class="skill-card-head">
+            <span class="skill-prefix">// CODE</span>
+            <span class="skill-icon">&#9670;</span>
+          </div>
+          <p class="skill-card-subtitle">Programming &amp; Logic</p>
+          <div class="skill-pills-wrap">
+            <span class="skill-pill">C</span>
+            <span class="skill-pill">C++</span>
+            <span class="skill-pill">Java</span>
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">SQL</span>
+          </div>
+        </div>
+
+        <!-- Tools -->
+        <div class="skill-category-card reveal-item">
+          <div class="skill-card-head">
+            <span class="skill-prefix">// TOOLS</span>
+            <span class="skill-icon">&#9881;</span>
+          </div>
+          <p class="skill-card-subtitle">Development Environments &amp; OS</p>
+          <div class="skill-pills-wrap">
+            <span class="skill-pill">GitHub</span>
+            <span class="skill-pill">VS Code</span>
+            <span class="skill-pill">MySQL</span>
+            <span class="skill-pill">Linux</span>
+            <span class="skill-pill">Windows</span>
+          </div>
+        </div>
+
+        <!-- Data -->
+        <div class="skill-category-card reveal-item">
+          <div class="skill-card-head">
+            <span class="skill-prefix">// DATA</span>
+            <span class="skill-icon">&#9783;</span>
+          </div>
+          <p class="skill-card-subtitle">Scientific &amp; Analytical Tooling</p>
+          <div class="skill-pills-wrap">
+            <span class="skill-pill">NumPy</span>
+            <span class="skill-pill">Pandas</span>
+          </div>
+        </div>
+
+        <!-- Beyond Code -->
+        <div class="skill-category-card skill-card-wide reveal-item">
+          <div class="skill-card-head">
+            <span class="skill-prefix">// BEYOND CODE</span>
+            <span class="skill-icon">&#10022;</span>
+          </div>
+          <p class="skill-card-subtitle">Collaboration, Leadership &amp; Creative Execution</p>
+          <div class="skill-pills-wrap">
+            <span class="skill-pill highlight-pill">creative thinking</span>
+            <span class="skill-pill">leadership</span>
+            <span class="skill-pill">event management</span>
+            <span class="skill-pill">collaboration</span>
+            <span class="skill-pill">time management</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: EDUCATION & ACHIEVEMENTS
+         ====================================================================== -->
+    <section class="section-container" id="education">
+      <div class="section-header reveal-item">
+        <span class="section-eyebrow">[ 04 // ACADEMIC &amp; COMPETITIVE ]</span>
+        <h2 class="section-title">Education &amp; Achievements</h2>
+      </div>
+
+      <div class="edu-achieve-grid">
+        <!-- Education Column -->
+        <div class="edu-card reveal-item">
+          <div class="edu-badge-row">
+            <span class="edu-badge">DEGREE &bull; B.TECH</span>
+            <span class="edu-year">2025–2029</span>
+          </div>
+
+          <h3 class="edu-degree">B.Tech, Information Technology</h3>
+          <p class="edu-institute">Indian Institute of Information Technology Lucknow</p>
+
+          <div class="cgpa-stat-box">
+            <span class="cgpa-label">CUMULATIVE GPA</span>
+            <span class="cgpa-value">8.45</span>
+          </div>
+
+          <div class="coursework-block">
+            <h4 class="coursework-title">Relevant Coursework:</h4>
+            <div class="coursework-pills">
+              <span class="cw-pill">Database Management Systems</span>
+              <span class="cw-pill">Computer Organization and Architecture</span>
+              <span class="cw-pill">Web Development and Application</span>
+              <span class="cw-pill">Object-Oriented Programming</span>
+              <span class="cw-pill">Data Structures and Algorithms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements Column -->
+        <div class="achieve-card reveal-item">
+          <div class="achieve-card-header">
+            <span class="achieve-tag">// COMPETITIVE RECORD</span>
+          </div>
+
+          <div class="achieve-items-stack">
+            <!-- CP Ratings -->
+            <div class="achieve-item">
+              <div class="achieve-stat-header">
+                <span class="stat-category">COMPETITIVE PROGRAMMING</span>
+                <span class="stat-status-badge">still climbing</span>
+              </div>
+              <div class="rating-blocks-row">
+                <div class="rating-box">
+                  <span class="platform-name">CodeChef</span>
+                  <span class="rating-number">1104</span>
+                </div>
+                <div class="rating-box">
+                  <span class="platform-name">Codeforces</span>
+                  <span class="rating-number">893</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- GitHub Activity -->
+            <div class="achieve-item">
+              <div class="achieve-stat-header">
+                <span class="stat-category">OPEN SOURCE &amp; VERSION CONTROL</span>
+              </div>
+              <div class="github-activity-box">
+                <div class="gh-dot"></div>
+                <div class="gh-text-group">
+                  <p class="gh-title">Active on GitHub</p>
+                  <p class="gh-sub">with merged pull requests.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 6: BEYOND THE CODE
+         ====================================================================== -->
+    <section class="section-container" id="beyond">
+      <div class="section-header reveal-item">
+        <span class="section-eyebrow">[ 05 // CULTURE &amp; INITIATIVE ]</span>
+        <h2 class="section-title">Beyond the Code</h2>
+      </div>
+
+      <div class="beyond-grid">
+        <!-- Axios Technical Club -->
+        <div class="beyond-card reveal-item">
+          <div class="beyond-card-header">
+            <span class="beyond-period">SINCE JUL 2026</span>
+            <span class="beyond-icon">&starf;</span>
+          </div>
+          <h3 class="beyond-role">Design Wing</h3>
+          <p class="beyond-org">Axios (Technical Club)</p>
+          <p class="beyond-desc">
+            Designing graphics and digital content for club initiatives.
+          </p>
+        </div>
+
+        <!-- Fine Art Club -->
+        <div class="beyond-card reveal-item">
+          <div class="beyond-card-header">
+            <span class="beyond-period">SINCE NOV 2025</span>
+            <span class="beyond-icon">&#9670;</span>
+          </div>
+          <h3 class="beyond-role">Fine Art Club</h3>
+          <p class="beyond-org">Utkrisht</p>
+          <p class="beyond-desc">
+            Helping organize creative activities for the campus.
+          </p>
+        </div>
+
+        <!-- Entrepreneurship Cell -->
+        <div class="beyond-card reveal-item">
+          <div class="beyond-card-header">
+            <span class="beyond-period">SINCE NOV 2025</span>
+            <span class="beyond-icon">&infin;</span>
+          </div>
+          <h3 class="beyond-role">E-Cell</h3>
+          <p class="beyond-org">Entrepreneurship Cell</p>
+          <p class="beyond-desc">
+            Supporting entrepreneurship events and outreach.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 7: CONTACT
+         ====================================================================== -->
+    <section class="section-container contact-section" id="contact">
+      <div class="contact-inner">
+        <div class="section-header reveal-item">
+          <span class="section-eyebrow">[ 06 // TRANSMISSION ]</span>
+          <h2 class="contact-statement">Let's build something together<span class="accent-period">.</span></h2>
+        </div>
+
+        <div class="contact-channels-grid">
+          <!-- Email Box -->
+          <div class="contact-tile reveal-item">
+            <span class="tile-label">DIRECT EMAIL</span>
+            <a href="mailto:emailtoaradhya29@gmail.com" class="tile-link" aria-label="Send email to emailtoaradhya29@gmail.com">
+              emailtoaradhya29@gmail.com
+            </a>
+          </div>
+
+          <!-- GitHub Box -->
+          <div class="contact-tile reveal-item">
+            <span class="tile-label">CODE ARCHIVE</span>
+            <a href="https://github.com/aradhyaverma29" target="_blank" rel="noopener noreferrer" class="tile-link" aria-label="GitHub Profile">
+              github.com/aradhyaverma29
+            </a>
+          </div>
+
+          <!-- LinkedIn Box (TODO marked) -->
+          <div class="contact-tile reveal-item">
+            <span class="tile-label">PROFESSIONAL NETWORK</span>
+            <!-- TODO: Add LinkedIn link -->
+            <a href="#" class="tile-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
+              LinkedIn Profile [link]
+            </a>
+          </div>
+        </div>
+
+        <!-- Resume Download CTA Button -->
+        <div class="contact-cta-action reveal-item">
+          <a href="https://drive.google.com/file/d/1_RW8cJd30X2lNEQdPEmzVFVl4_lho9Ed/view?usp=drive_link" class="download-resume-btn" target="_blank" rel="noopener noreferrer" aria-label="Download or View Aradhya Verma's Resume">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download resume</span>
+          </a>
+          <span class="resume-note">Google Drive &bull; PDF &bull; IIIT Lucknow</span>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-logo">AV</span>
+        <span class="footer-credit">Designed &amp; Developed with plain HTML, CSS &amp; JS.</span>
+      </div>
+      <div class="footer-right">
+        <span>Aradhya Verma &bull; All Rights Reserved</span>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>
