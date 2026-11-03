@@ -5,13 +5,248 @@
  * Plain Vanilla JavaScript — Zero Frameworks / Build Steps.
  */
 
+const LINKEDIN_URL = "";
+
+const CONTACT_VERTEX_SHADER = `
+attribute vec2 position;
+varying vec2 vUv;
+void main() {
+  vUv = position * 0.5 + 0.5;
+  gl_Position = vec4(position, 0.0, 1.0);
+}
+`;
+
+const CONTACT_FRAGMENT_SHADER = `
+precision highp float;
+varying vec2 vUv;
+
+uniform vec2  u_resolution;
+uniform float u_time;
+uniform float u_grain;
+uniform vec3  u_colors[4];
+uniform vec3  u_bg;
+
+vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+
+float snoise(vec2 v){
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+           -0.577350269189626, 0.024390243902439);
+  vec2 i  = floor(v + dot(v, C.yy) );
+  vec2 x0 = v -   i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod(i, 289.0);
+  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+  + i.x + vec3(0.0, i1.x, 1.0 ));
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+    dot(x12.zw,x12.zw)), 0.0);
+  m = m*m ;
+  m = m*m ;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+  vec3 g;
+  g.x  = a0.x  * x0.x  + h.x  * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
+}
+
+void main() {
+  vec2 uv = vUv;
+  float ratio = u_resolution.x / u_resolution.y;
+  vec2 p = uv - 0.5;
+  p.x *= ratio;
+
+  float t = u_time * 0.1;
+
+  float n1 = snoise(p * 0.4 + vec2(t * 0.2, -t * 0.3));
+  float n2 = snoise(p * 0.55 + vec2(-t * 0.15, t * 0.25) + n1 * 0.25);
+  float n3 = snoise(p * 0.75 + vec2(t * 0.1, -t * 0.2) + n2 * 0.2);
+
+  vec3 col = u_bg;
+
+  float dist = length(p) * 1.5;
+  float vignette = 1.0 - smoothstep(0.3, 1.2, dist);
+
+  col = mix(col, u_colors[0], smoothstep(-0.2, 0.5, n1) * 0.85);
+  col = mix(col, u_colors[1], smoothstep(-0.1, 0.6, n2) * 0.7);
+  col = mix(col, u_colors[2], smoothstep(-0.3, 0.4, n3) * 0.6);
+  col = mix(col, u_colors[3], smoothstep(0.0, 0.7, n1 * n2) * 0.5);
+
+  float glow = smoothstep(0.8, 0.0, dist) * 0.3;
+  col += u_colors[1] * glow;
+
+  col = mix(col * 0.2, col, vignette);
+
+  float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453 + u_time);
+  col += (grain - 0.5) * u_grain * 0.1;
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
 document.addEventListener('DOMContentLoaded', () => {
   initCharacterCanvas();
   initMagneticCursor();
   initScrollReveal();
   initGlassFolders();
   initPlaceholderLinks();
+  initContactSection();
 });
+
+function initContactSection() {
+  const section = document.getElementById('contact');
+  const canvas = section && section.querySelector('.contact-bg');
+  if (!section || !canvas) return;
+
+  if (LINKEDIN_URL) {
+    const linkedin = section.querySelector('.contact-linkedin');
+    linkedin.href = LINKEDIN_URL;
+    linkedin.hidden = false;
+  }
+
+  const copyButton = section.querySelector('#copy-email');
+  const status = section.querySelector('#copy-status');
+  const email = 'emailtoaradhya29@gmail.com';
+  const copyWithFallback = () => {
+    const field = document.createElement('textarea');
+    field.value = email;
+    field.setAttribute('readonly', '');
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.select();
+    const copied = document.execCommand('copy');
+    field.remove();
+    if (!copied) throw new Error('Clipboard copy failed');
+  };
+  let copiedTimer;
+  copyButton.addEventListener('click', async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        try { await navigator.clipboard.writeText(email); }
+        catch (_) { copyWithFallback(); }
+      } else {
+        copyWithFallback();
+      }
+      copyButton.textContent = 'Copied';
+      status.textContent = 'Email address copied to clipboard.';
+      window.clearTimeout(copiedTimer);
+      copiedTimer = window.setTimeout(() => { copyButton.textContent = 'Copy email'; }, 2000);
+    } catch (error) {
+      status.textContent = 'Could not copy the email address. Please use Say hello instead.';
+    }
+  });
+
+  const staticBackground = () => { section.classList.add('contact-bg-fallback'); };
+  const gl = canvas.getContext('webgl', { alpha: false, antialias: false });
+  if (!gl) { staticBackground(); return; }
+
+  const compileShader = (type, source) => {
+    const shader = gl.createShader(type);
+    if (!shader) return null;
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error('Contact background shader compile error:', gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  };
+  const vertexShader = compileShader(gl.VERTEX_SHADER, CONTACT_VERTEX_SHADER);
+  const precision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+  const fragmentSource = precision && precision.precision > 0
+    ? CONTACT_FRAGMENT_SHADER
+    : CONTACT_FRAGMENT_SHADER.replace('precision highp float;', 'precision mediump float;');
+  const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+  if (!vertexShader || !fragmentShader) { staticBackground(); return; }
+
+  const program = gl.createProgram();
+  if (!program) { staticBackground(); return; }
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error('Contact background program link error:', gl.getProgramInfoLog(program));
+    staticBackground();
+    return;
+  }
+  gl.useProgram(program);
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const position = gl.getAttribLocation(program, 'position');
+  gl.enableVertexAttribArray(position);
+  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+  const uniforms = {
+    resolution: gl.getUniformLocation(program, 'u_resolution'),
+    time: gl.getUniformLocation(program, 'u_time'),
+    grain: gl.getUniformLocation(program, 'u_grain'),
+    colors: gl.getUniformLocation(program, 'u_colors[0]'),
+    bg: gl.getUniformLocation(program, 'u_bg')
+  };
+  const hexRgb = (hex) => [0, 2, 4].map((index) => parseInt(hex.slice(index + 1, index + 3), 16) / 255);
+  const palette = ['#641E2B', '#9E3948', '#D7A5A1', '#30151C'].flatMap(hexRgb);
+  const bg = hexRgb('#30151C');
+  const paletteUniform = new Float32Array(palette);
+  const bgUniform = new Float32Array(bg);
+  let frame = 0;
+  let active = false;
+  let inView = false;
+  let destroyed = false;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dpr = () => Math.min(window.devicePixelRatio || 1, window.matchMedia('(max-width: 600px)').matches ? 1.5 : 2);
+  const resize = () => {
+    const ratio = dpr();
+    const width = Math.max(1, Math.round(section.clientWidth * ratio));
+    const height = Math.max(1, Math.round(section.clientHeight * ratio));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      gl.viewport(0, 0, width, height);
+    }
+    if (reducedMotion) draw(0);
+  };
+  const draw = (time) => {
+    if (destroyed || gl.isContextLost()) return;
+    gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+    gl.uniform1f(uniforms.time, time * 0.001 * 2.0);
+    gl.uniform1f(uniforms.grain, 0.3);
+    gl.uniform3fv(uniforms.colors, paletteUniform);
+    gl.uniform3fv(uniforms.bg, bgUniform);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+  const render = (time) => { if (!active || reducedMotion || destroyed) return; draw(time); frame = requestAnimationFrame(render); };
+  const sync = () => {
+    const shouldRun = inView && !document.hidden && !reducedMotion && !destroyed;
+    if (shouldRun && !active) { active = true; frame = requestAnimationFrame(render); }
+    else if (!shouldRun && active) { active = false; cancelAnimationFrame(frame); }
+  };
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(section);
+  resize();
+  const visibilityObserver = new IntersectionObserver((entries) => { inView = entries.some((entry) => entry.isIntersecting); sync(); });
+  visibilityObserver.observe(section);
+  document.addEventListener('visibilitychange', sync);
+  canvas.addEventListener('webglcontextlost', (event) => { event.preventDefault(); active = false; cancelAnimationFrame(frame); staticBackground(); });
+  window.addEventListener('pagehide', () => {
+    destroyed = true;
+    cancelAnimationFrame(frame);
+    resizeObserver.disconnect();
+    visibilityObserver.disconnect();
+    document.removeEventListener('visibilitychange', sync);
+    gl.deleteBuffer(buffer);
+    gl.deleteProgram(program);
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+  }, { once: true });
+  if (reducedMotion) draw(0);
+  else sync();
+}
 
 /* ==========================================================================
    1. ZERO-GHOSTING 60 FPS CANVAS CHARACTER RENDERER (Discrete Pose Mapping)

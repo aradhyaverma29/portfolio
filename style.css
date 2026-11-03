@@ -1607,116 +1607,157 @@ body.cursor-hover .custom-cursor-dot {
    12. Section 7: Contact
    -------------------------------------------------------------------------- */
 .contact-section {
-  border-top: 1px solid var(--border-subtle);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 5rem clamp(16px, 4vw, 48px) 4.5rem;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.contact-inner {
-  max-width: 900px;
+.contact-bg {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  display: block;
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  height: 100%;
+  pointer-events: none;
+}
+
+.contact-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(48, 21, 28, 0.55) 0%, rgba(48, 21, 28, 0.28) 58%, rgba(48, 21, 28, 0.4) 100%);
+}
+
+.contact-bg-fallback .contact-bg { display: none; }
+.contact-bg-fallback { background: radial-gradient(ellipse at 24% 28%, var(--primary), transparent 55%), radial-gradient(ellipse at 78% 72%, var(--soft), transparent 48%), linear-gradient(135deg, var(--secondary), var(--bg) 70%); }
+
+.contact-eyebrow {
+  position: absolute;
+  top: clamp(28px, 5vh, 56px);
+  left: clamp(16px, 4vw, 48px);
+  color: var(--soft);
+}
+
+.contact-content {
+  width: min(100%, 850px);
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  box-sizing: border-box;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.contact-openness {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(215, 165, 161, 0.6);
+  border-radius: 999px;
+  background: rgba(48, 21, 28, 0.56);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
 }
 
 .contact-statement {
   font-family: var(--font-editorial);
-  font-size: clamp(2.1rem, 5.5vw, 4rem);
+  max-width: 850px;
+  margin-top: 1.6rem;
+  font-size: clamp(2.5rem, 7.2vw, 6rem);
   font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
+  line-height: 1.02;
+  letter-spacing: -0.055em;
   color: var(--text);
+  text-wrap: balance;
 }
 
-.contact-channels-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .contact-channels-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.contact-tile {
-  background: var(--secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.contact-tile:hover {
-  border-color: var(--primary);
-  transform: translateY(-3px);
-}
-
-.tile-label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-}
-
-.tile-link {
-  font-size: 0.92rem;
-  font-weight: 500;
+.contact-description {
+  max-width: 600px;
+  margin-top: 1.25rem;
   color: var(--text);
-  word-break: break-all;
-  overflow-wrap: anywhere;
-  transition: color var(--transition-fast);
+  font-size: clamp(1rem, 2vw, 1.18rem);
+  line-height: 1.6;
 }
 
-.tile-link:hover {
-  color: var(--primary);
-}
-
-.contact-cta-action {
+.contact-actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.65rem;
-  padding-top: 0.5rem;
+  justify-content: center;
+  gap: 0.85rem;
   width: 100%;
+  margin-top: 2rem;
 }
 
-.download-resume-btn {
+.contact-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  justify-content: center;
+  min-height: 3.35rem;
+  padding: 0.85rem 1.55rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: 600 0.95rem var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.contact-button-primary { background: var(--text); color: var(--bg); }
+.contact-button-copy { border-color: var(--soft); background: rgba(246, 240, 233, 0.12); color: var(--text); backdrop-filter: blur(12px); }
+.contact-button:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(158, 57, 72, 0.65); }
+.contact-button-copy:hover { background: rgba(158, 57, 72, 0.42); border-color: var(--text); }
+.contact-button:focus-visible, .contact-links a:focus-visible { outline: 3px solid var(--text); outline-offset: 4px; box-shadow: 0 0 0 6px rgba(158, 57, 72, 0.75); }
+
+.contact-live-message {
+  min-height: 1.5rem;
+  margin-top: 0.65rem;
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.7rem;
+  margin-top: 1.15rem;
+}
+
+.contact-links a {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--primary);
-  color: var(--bg);
-  border: 1px solid var(--primary);
-  padding: 0.9rem 1.75rem;
-  border-radius: 3px;
-  transition: all var(--transition-fast);
+  color: var(--text);
+  font-size: 0.8rem;
+  text-decoration-color: rgba(215, 165, 161, 0.55);
+  text-underline-offset: 5px;
+  transition: color var(--transition-fast), text-shadow var(--transition-fast);
 }
 
-.download-resume-btn:hover {
-  background: var(--soft);
-  box-shadow: 0 0 24px rgba(var(--primary-rgb), 0.35);
-  transform: translateY(-2px);
+.contact-links a:hover {
+  color: var(--soft);
+  text-shadow: 0 0 18px rgba(158, 57, 72, 0.9);
 }
 
-.resume-note {
+.contact-footer {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 16px;
+  right: 16px;
+  text-align: center;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--text-muted);
+  color: var(--soft);
 }
 
 /* --------------------------------------------------------------------------

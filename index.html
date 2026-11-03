@@ -506,64 +506,27 @@
     <!-- ======================================================================
          SECTION 7: CONTACT
          ====================================================================== -->
-    <section class="section-container contact-section" id="contact">
-      <div class="contact-inner">
-        <div class="section-header reveal-item">
-          <span class="section-eyebrow">[ 06 // TRANSMISSION ]</span>
-          <h2 class="contact-statement">Let's build something together<span class="accent-period">.</span></h2>
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+      <canvas class="contact-bg" aria-hidden="true"></canvas>
+      <span class="section-eyebrow contact-eyebrow">[ 06 // CONTACT ]</span>
+      <div class="contact-content">
+        <span class="contact-openness">Open to opportunities</span>
+        <h2 class="contact-statement" id="contact-title">Let's build something together.</h2>
+        <p class="contact-description">Have a project, an internship or just an idea? My inbox is open.</p>
+        <div class="contact-actions">
+          <a class="contact-button contact-button-primary" href="mailto:emailtoaradhya29@gmail.com">Say hello</a>
+          <button class="contact-button contact-button-copy" type="button" id="copy-email">Copy email</button>
         </div>
-
-        <div class="contact-channels-grid">
-          <!-- Email Box -->
-          <div class="contact-tile reveal-item">
-            <span class="tile-label">DIRECT EMAIL</span>
-            <a href="mailto:emailtoaradhya29@gmail.com" class="tile-link" aria-label="Send email to emailtoaradhya29@gmail.com">
-              emailtoaradhya29@gmail.com
-            </a>
-          </div>
-
-          <!-- GitHub Box -->
-          <div class="contact-tile reveal-item">
-            <span class="tile-label">CODE ARCHIVE</span>
-            <a href="https://github.com/aradhyaverma29" target="_blank" rel="noopener noreferrer" class="tile-link" aria-label="GitHub Profile">
-              github.com/aradhyaverma29
-            </a>
-          </div>
-
-          <!-- LinkedIn Box (TODO marked) -->
-          <div class="contact-tile reveal-item">
-            <span class="tile-label">PROFESSIONAL NETWORK</span>
-            <!-- TODO: Add LinkedIn link -->
-            <a href="#" class="tile-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
-              LinkedIn Profile [link]
-            </a>
-          </div>
-        </div>
-
-        <!-- Resume Download CTA Button -->
-        <div class="contact-cta-action reveal-item">
-          <a href="https://drive.google.com/file/d/1_RW8cJd30X2lNEQdPEmzVFVl4_lho9Ed/view?usp=drive_link" class="download-resume-btn" target="_blank" rel="noopener noreferrer" aria-label="Download or View Aradhya Verma's Resume">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Download resume</span>
-          </a>
-          <span class="resume-note">Google Drive &bull; PDF &bull; IIIT Lucknow</span>
-        </div>
+        <p class="contact-live-message" id="copy-status" aria-live="polite"></p>
+        <nav class="contact-links" aria-label="Contact links">
+          <a href="https://github.com/aradhyaverma29" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="contact-linkedin" hidden target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="resume.pdf" target="_blank" rel="noopener noreferrer">Download resume</a>
+        </nav>
       </div>
+      <footer class="contact-footer">© 2026 Aradhya Verma · Designed and built by me</footer>
     </section>
   </main>
-
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-left">
-        <span class="footer-logo">AV</span>
-        <span class="footer-credit">Designed &amp; Developed with plain HTML, CSS &amp; JS.</span>
-      </div>
-      <div class="footer-right">
-        <span>Aradhya Verma &bull; All Rights Reserved</span>
-      </div>
-    </div>
-  </footer>
 
   <script src="script.js"></script>
 </body>
