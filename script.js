@@ -98,8 +98,82 @@ document.addEventListener('DOMContentLoaded', () => {
   initExpandableCapabilityCards();
   initBeyondCardSwap();
   initPlaceholderLinks();
+  try { initMoltenBackground(); } catch (error) { console.warn('Molten background unavailable.', error); }
   initContactSection();
 });
+
+function initMoltenBackground() {
+  const zone = document.getElementById('molten-zone');
+  if (!zone) return;
+  const root = document.createElement('div');
+  root.className = 'molten-bg';
+  root.setAttribute('aria-hidden', 'true');
+  const stage = document.createElement('div');
+  stage.className = 'molten-bg__stage';
+  root.appendChild(stage);
+  zone.insertBefore(root, zone.firstChild);
+
+  const config = { colors: ['--secondary', '--primary', '--soft'], coreColor: '--text', speed: 0.2, scale: 3.2, detail: 3, opacity: 0.78, dpr: 1 };
+  const style = getComputedStyle(document.documentElement);
+  const color = (name) => style.getPropertyValue(name).trim();
+  const rgb = (value) => {
+    const probe = document.createElement('canvas').getContext('2d');
+    if (!probe) return [1, 1, 1];
+    probe.fillStyle = color(value);
+    const match = /\d+/g.exec(probe.fillStyle);
+    if (probe.fillStyle.startsWith('#')) {
+      const n = parseInt(probe.fillStyle.slice(1), 16);
+      return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+    }
+    const nums = probe.fillStyle.match(/[\d.]+/g);
+    return nums ? nums.slice(0, 3).map((n) => Number(n) / 255) : [1, 1, 1];
+  };
+  const small = matchMedia('(max-width: 899px)').matches || matchMedia('(pointer: coarse)').matches;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const settings = { palette: [...config.colors, config.coreColor].map(rgb), speed: config.speed, scale: config.scale, detail: small ? 2 : config.detail, opacity: config.opacity, dpr: small ? 0.75 : config.dpr, mouse: !small && !reduced, flare: !small && !reduced, reduced };
+  const fallback = () => { root.classList.add('molten-bg-fallback'); stage.replaceChildren(); };
+  const canvas = document.createElement('canvas');
+  stage.appendChild(canvas);
+  let gl;
+  try { gl = canvas.getContext('webgl2', { alpha: true, antialias: false, depth: false, stencil: false, premultipliedAlpha: true, powerPreference: 'high-performance' }); } catch (_) { gl = null; }
+  if (!gl) { fallback(); return; }
+
+  const vertex = `#version 300 es\nin vec2 aPosition; void main(){gl_Position=vec4(aPosition,0.,1.);}`;
+  const fragment = `#version 300 es
+precision highp float; uniform vec2 uResolution; uniform float uTime; uniform float uScale; uniform float uOpacity; uniform vec3 uColors[4]; uniform vec2 uMouse; uniform float uPresence; out vec4 outColor;
+float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+void main(){vec2 uv=gl_FragCoord.xy/uResolution; vec2 p=(gl_FragCoord.xy-.5*uResolution)/uResolution.y; p*=uScale; float t=uTime; float d=0.; vec2 q=p; for(int i=0;i<4;i++){q=vec2(sin(q.y*1.7+t*.6)+cos(q.x*1.3-t*.4),sin(q.x*1.5-t*.35)+cos(q.y*1.8+t*.5))*.48+q*.42; d+=.018/max(.025,abs(length(q)-.72));} float m=exp(-dot((uv-uMouse)*vec2(uResolution.x/uResolution.y,1.),(uv-uMouse)*vec2(uResolution.x/uResolution.y,1.))*12.)*uPresence; d+=m*.08; float v=clamp(d*.12,0.,1.); vec3 c=mix(uColors[0],uColors[1],smoothstep(.15,.65,v)); c=mix(c,uColors[2],smoothstep(.55,.95,v)); c=mix(c,uColors[3],smoothstep(.82,1.,v)); float a=clamp(v*.8,0.,.75)*uOpacity; float grain=(hash(gl_FragCoord.xy+fract(t)*97.)-.5)*.025; outColor=vec4(max(c+grain,0.)*a,a);}`;
+  const compile = (type, source) => {
+    const shader = gl.createShader(type);
+    if (!shader) return null;
+    gl.shaderSource(shader, source); gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { gl.deleteShader(shader); return null; }
+    return shader;
+  };
+  const vs = compile(gl.VERTEX_SHADER, vertex), fs = compile(gl.FRAGMENT_SHADER, fragment);
+  const program = gl.createProgram();
+  if (!vs || !fs || !program) { fallback(); return; }
+  gl.attachShader(program, vs); gl.attachShader(program, fs); gl.bindAttribLocation(program, 0, 'aPosition'); gl.linkProgram(program); gl.deleteShader(vs); gl.deleteShader(fs);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { gl.deleteProgram(program); fallback(); return; }
+  const loc = Object.fromEntries(['uResolution','uTime','uScale','uOpacity','uColors','uMouse','uPresence'].map((n) => [n, gl.getUniformLocation(program, n)]));
+  const vao = gl.createVertexArray(), buffer = gl.createBuffer();
+  gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, buffer); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,3,-1,-1,3]), gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0); gl.useProgram(program);
+  const palette = new Float32Array(12); settings.palette.forEach((c,i) => palette.set(c,i*3)); gl.uniform3fv(loc.uColors,palette); gl.uniform1f(loc.uScale,settings.scale); gl.uniform1f(loc.uOpacity,settings.opacity);
+  const state = { w:1,h:1,t:0,last:0,raf:0,visible:false,mouse:[.5,.5],presence:0,inside:false };
+  const resize = () => { const d=Math.min(devicePixelRatio||1,settings.dpr); state.w=Math.max(1,Math.round(stage.clientWidth*d)); state.h=Math.max(1,Math.round(stage.clientHeight*d)); if(canvas.width!==state.w||canvas.height!==state.h){canvas.width=state.w;canvas.height=state.h;} };
+  const draw = () => { gl.viewport(0,0,state.w,state.h); gl.uniform2f(loc.uResolution,state.w,state.h); gl.uniform1f(loc.uTime,state.t); gl.uniform2f(loc.uMouse,state.mouse[0],1-state.mouse[1]); gl.uniform1f(loc.uPresence,state.presence); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES,0,3); };
+  const tick = (now) => { state.raf=0; if(!state.visible||document.hidden)return; const dt=state.last?Math.min((now-state.last)/1000,.1):0; state.last=now; if(!settings.reduced)state.t+=dt*settings.speed; const target=settings.mouse&&state.inside?1:0; state.presence+=(target-state.presence)*(1-Math.exp(-dt/.25)); draw(); if(!settings.reduced||state.presence>.005)state.raf=requestAnimationFrame(tick); };
+  const wake=()=>{if(state.visible&&!document.hidden&&!state.raf)state.raf=requestAnimationFrame(tick);};
+  const io=new IntersectionObserver(([entry])=>{state.visible=entry.isIntersecting;if(state.visible){resize();draw();wake();}else{cancelAnimationFrame(state.raf);state.raf=0;}},{rootMargin:'100px'}); io.observe(root);
+  const ro=new ResizeObserver(()=>{resize();wake();}); ro.observe(stage); resize();
+  const local=(e)=>{const r=root.getBoundingClientRect();state.inside=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;if(state.inside)state.mouse=[(e.clientX-r.left)/Math.max(1,r.width),(e.clientY-r.top)/Math.max(1,r.height)];wake();};
+  const down=(e)=>{if(!settings.flare||e.button!==0||e.target.closest('a,button,input,textarea,select,label,[role="button"]'))return;local(e);wake();};
+  const leave=()=>{state.inside=false;wake();};
+  window.addEventListener('pointermove',local,{passive:true}); window.addEventListener('pointerdown',down); document.documentElement.addEventListener('pointerleave',leave);
+  document.addEventListener('visibilitychange',wake);
+  canvas.addEventListener('webglcontextlost',(e)=>{e.preventDefault();cancelAnimationFrame(state.raf);io.disconnect();ro.disconnect();window.removeEventListener('pointermove',local);window.removeEventListener('pointerdown',down);document.documentElement.removeEventListener('pointerleave',leave);document.removeEventListener('visibilitychange',wake);gl.deleteProgram(program);gl.deleteBuffer(buffer);gl.deleteVertexArray(vao);fallback();});
+  if(settings.reduced){state.t=.4;draw();}
+}
 
 function initScrollStack() {
   const root = document.querySelector('#projects .projects-list');
@@ -437,7 +511,7 @@ function initCharacterCanvas() {
 
   const ctx = canvas.getContext('2d', { alpha: false });
   const FRAME_DIR = 'assets/frames/';
-  const HERO_BG_COLOR = '#f20601';
+  const HERO_BG_COLOR = '#321216';
 
   // Source image natural dimensions after horizontal black-bar crop (x in [147, 1132))
   const IMG_W = 985;
@@ -446,28 +520,12 @@ function initCharacterCanvas() {
   const FACE_SRC_X = 490.0;
   const FACE_SRC_Y = 310.0;
 
-  // Fallback discrete poses config (16 clean open-eye compass angles, safe from hand intrusion)
-  // pose_04 and pose_05 removed (blink frames); pose_02 -> F50, pose_03 -> F68, pose_06 -> F72
-  const FALLBACK_POSES = [
-    { file: "pose_00.webp", angle: 1.4,   label: "UP" },
-    { file: "pose_01.webp", angle: 24.3,  label: "NNE" },
-    { file: "pose_02.webp", angle: 52.4,  label: "UP-RIGHT" },
-    { file: "pose_03.webp", angle: 121.0, label: "ESE-DR" },
-    { file: "pose_06.webp", angle: 135.0, label: "DOWN-RIGHT" },
-    { file: "pose_07.webp", angle: 156.6, label: "SSE" },
-    { file: "pose_08.webp", angle: 182.3, label: "DOWN" },
-    { file: "pose_09.webp", angle: 205.8, label: "SSW" },
-    { file: "pose_10.webp", angle: 213.2, label: "DOWN-LEFT" },
-    { file: "pose_11.webp", angle: 270.0, label: "LEFT" },
-    { file: "pose_12.webp", angle: 282.1, label: "WNW" },
-    { file: "pose_13.webp", angle: 298.3, label: "UP-LEFT-1" },
-    { file: "pose_14.webp", angle: 309.8, label: "UP-LEFT-2" },
-    { file: "pose_15.webp", angle: 324.5, label: "UP-LEFT-3" },
-    { file: "pose_16.webp", angle: 348.3, label: "NNW" },
-    { file: "pose_17.webp", angle: 356.9, label: "NNW-UP" }
-  ];
-
-  let posesList = FALLBACK_POSES;
+  // 64 evenly spaced frames: index 0 is UP; indices increase clockwise.
+  let posesList = Array.from({ length: 64 }, (_, index) => ({
+    file: `frame_${String(index).padStart(2, '0')}.webp`,
+    angle: index * (360 / 64),
+    label: `FRAME ${String(index).padStart(2, '0')}`
+  }));
   let centerFrame = null;
   let loadedCount = 0;
   let totalToLoad = 0;
@@ -504,24 +562,9 @@ function initCharacterCanvas() {
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // 1. Fetch poses.json (with fallback to embedded config) and preload WebP frames
+  // 1. Preload all 64 directional frames and the neutral eye-contact frame.
   function initLoad() {
-    fetch(`${FRAME_DIR}poses.json`)
-      .then((res) => {
-        if (!res.ok) throw new Error('poses.json fetch returned status ' + res.status);
-        return res.json();
-      })
-      .then((data) => {
-        if (data && Array.isArray(data.poses) && data.poses.length > 0) {
-          posesList = data.poses;
-        }
-        preloadImages();
-      })
-      .catch(() => {
-        // Fallback for file:// offline preview or network restrictions
-        posesList = FALLBACK_POSES;
-        preloadImages();
-      });
+    preloadImages();
   }
 
   function preloadImages() {
@@ -627,9 +670,9 @@ function initCharacterCanvas() {
     faceScreenY = drawY + (FACE_SRC_Y / IMG_H) * drawH;
 
     // Deadzone: 12% enter, 14% exit tied to the drawn frame size (never full screen)
-    const drawnFrameSize = Math.min(drawW, drawH);
-    deadzoneEnter = 0.12 * drawnFrameSize;
-    deadzoneExit = 0.14 * drawnFrameSize;
+    shorterSide = Math.min(canvasW, canvasH);
+    deadzoneEnter = 0.12 * shorterSide;
+    deadzoneExit = 0.14 * shorterSide;
 
     // If pointer not yet introduced, default near face for initial direct eye contact
     if (pointerX < 0) {
@@ -743,13 +786,13 @@ function initCharacterCanvas() {
           // Left edge soft gradient mask
           const leftGrad = ctx.createLinearGradient(clampedLeft, 0, clampedLeft + fadeWidth, 0);
           leftGrad.addColorStop(0, HERO_BG_COLOR);
-          leftGrad.addColorStop(1, 'rgba(242, 6, 1, 0)');
+          leftGrad.addColorStop(1, 'rgba(50, 18, 22, 0)');
           ctx.fillStyle = leftGrad;
           ctx.fillRect(clampedLeft, drawY, fadeWidth, drawH);
 
           // Right edge soft gradient mask
           const rightGrad = ctx.createLinearGradient(clampedRight - fadeWidth, 0, clampedRight, 0);
-          rightGrad.addColorStop(0, 'rgba(242, 6, 1, 0)');
+          rightGrad.addColorStop(0, 'rgba(50, 18, 22, 0)');
           rightGrad.addColorStop(1, HERO_BG_COLOR);
           ctx.fillStyle = rightGrad;
           ctx.fillRect(clampedRight - fadeWidth, drawY, fadeWidth, drawH);

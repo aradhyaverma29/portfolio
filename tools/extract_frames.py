@@ -14,9 +14,9 @@ import numpy as np
 def main():
     # 1. Locate source video
     source_candidates = [
+        'assets/character.mp4.mp4',
         'assets/character.mp4',
-        'assests/character.mp4.mp4',
-        'assests/character.mp4',
+        'tools/source/character.mp4.mp4',
         'tools/source/character.mp4'
     ]
     video_path = None
@@ -57,14 +57,10 @@ def main():
 
     # 2. Seamless Background Detection
     # Sample corners of first frame and center frame
-    corners = [
-        frames[0][5:30, 5:30],
-        frames[0][5:30, -30:-5],
-        frames[0][-30:-5, 5:30],
-        frames[0][-30:-5, -30:-5],
-        frames[-1][5:30, 5:30],
-        frames[-1][5:30, -30:-5]
-    ]
+    sample_frames = [frames[0][:, 147:1132], frames[183][:, 147:1132]]
+    corners = [sample_frames[0][5:30, 5:30], sample_frames[0][5:30, -30:-5],
+               sample_frames[0][-30:-5, 5:30], sample_frames[0][-30:-5, -30:-5],
+               sample_frames[1][5:30, 5:30], sample_frames[1][5:30, -30:-5]]
     corner_colors = [np.mean(c, axis=(0, 1)) for c in corners]
     mean_bgr = np.mean(corner_colors, axis=0)
     b, g, r = int(round(mean_bgr[0])), int(round(mean_bgr[1])), int(round(mean_bgr[2]))
@@ -159,13 +155,14 @@ def main():
         out_name = f"frame_{i:02d}.webp"
         out_path = os.path.join(out_dir, out_name)
         # Quality 85 WebP
-        cv2.imwrite(out_path, frames[f_idx], [cv2.IMWRITE_WEBP_QUALITY, 85])
+        cv2.imwrite(out_path, frames[f_idx][:, 147:1132], [cv2.IMWRITE_WEBP_QUALITY, 85])
         size = os.path.getsize(out_path)
         total_bytes += size
 
     # Save center neutral frame
     center_path = os.path.join(out_dir, "center.webp")
-    cv2.imwrite(center_path, frames[compass_poses['CENTER']], [cv2.IMWRITE_WEBP_QUALITY, 85])
+    center_crop = frames[compass_poses['CENTER']][:, 147:1132]
+    cv2.imwrite(center_path, center_crop, [cv2.IMWRITE_WEBP_QUALITY, 85])
     center_size = os.path.getsize(center_path)
     total_bytes += center_size
 
@@ -176,11 +173,34 @@ def main():
     print(f"Average frame size: {avg_kb:.1f} KB (Target: < 120 KB) -> OK!")
     print(f"Total frames size:  {total_mb:.2f} MB (Target: < 8 MB) -> OK!")
 
+    labels = ['UP', 'UP-RIGHT', 'RIGHT', 'DOWN-RIGHT', 'DOWN', 'DOWN-LEFT', 'LEFT', 'UP-LEFT']
+    indices = [0, 8, 16, 24, 32, 40, 48, 56]
+    tile_w, tile_h = 240, 205
+    sheet = np.zeros((3 * tile_h, 3 * tile_w, 3), dtype=np.uint8)
+    for pos, (label, frame_index) in enumerate(zip(labels, indices)):
+        source_index = selected_frames[frame_index]
+        thumb = cv2.resize(frames[source_index][:, 147:1132], (tile_w, tile_h - 28))
+        tile = np.zeros((tile_h, tile_w, 3), dtype=np.uint8)
+        tile[:tile_h - 28] = thumb
+        cv2.rectangle(tile, (0, tile_h - 28), (tile_w, tile_h - 1), (30, 21, 28), -1)
+        cv2.putText(tile, f'{label} F{source_index}', (6, tile_h - 8), cv2.FONT_HERSHEY_SIMPLEX, .45, (240, 240, 240), 1)
+        row, col = divmod(pos, 3)
+        sheet[row * tile_h:(row + 1) * tile_h, col * tile_w:(col + 1) * tile_w] = tile
+    thumb = cv2.resize(center_crop, (tile_w, tile_h - 28))
+    tile = np.zeros((tile_h, tile_w, 3), dtype=np.uint8)
+    tile[:tile_h - 28] = thumb
+    cv2.rectangle(tile, (0, tile_h - 28), (tile_w, tile_h - 1), (30, 21, 28), -1)
+    cv2.putText(tile, f'CENTER F{compass_poses["CENTER"]}', (6, tile_h - 8), cv2.FONT_HERSHEY_SIMPLEX, .45, (240, 240, 240), 1)
+    sheet[2 * tile_h:3 * tile_h, 2 * tile_w:3 * tile_w] = tile
+    cv2.imwrite('tools/rotation_contact_sheet.jpg', sheet)
+    print('8-way source mapping:', {label: selected_frames[index] for label, index in zip(labels, indices)})
+    print('Saved verification sheet: tools/rotation_contact_sheet.jpg')
+
     # 6. Move original mp4 out of deployed assets
     print(f"\n=== 5. MOVING ORIGINAL MP4 OUT OF DEPLOYED ASSETS ===")
     tools_source_dir = 'tools/source'
     os.makedirs(tools_source_dir, exist_ok=True)
-    dest_video = os.path.join(tools_source_dir, 'character.mp4')
+    dest_video = os.path.join(tools_source_dir, 'character.mp4.mp4')
 
     # If original video exists, move it
     if os.path.exists(video_path) and os.path.abspath(video_path) != os.path.abspath(dest_video):

@@ -35,7 +35,7 @@
 
   <main id="main-content">
     <!-- ======================================================================
-         SECTION 1: HERO (Interactive 60 FPS Character Canvas)
+         SECTION 1: HERO
          ====================================================================== -->
     <section class="hero-stage" id="hero" aria-label="Hero Section">
       <!-- Loading State -->
@@ -44,7 +44,7 @@
         <span class="loader-text">INITIALIZING INTERFACE</span>
       </div>
 
-      <!-- Character 60 FPS Canvas -->
+      <!-- Preloaded directional frames are drawn one at a time to this canvas. -->
       <canvas id="character-canvas" class="character-canvas" aria-label="Animated portrait of the character following the cursor" role="img"></canvas>
 
       <!-- Hero Typography (Bottom-Left) -->
@@ -70,6 +70,7 @@
       </div>
     </section>
 
+    <div class="molten-zone" id="molten-zone">
     <!-- ======================================================================
          SECTION 2: ABOUT
          ====================================================================== -->
@@ -503,6 +504,8 @@
         </div>
       </div>
     </section>
+
+    </div>
 
     <!-- ======================================================================
          SECTION 7: CONTACT
