@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCharacterCanvas();
   initMagneticCursor();
   initScrollReveal();
+  initGlassFolders();
   initPlaceholderLinks();
 });
 
@@ -555,6 +556,7 @@ function initMagneticCursor() {
 function initScrollReveal() {
   const revealElements = document.querySelectorAll('.reveal-item');
   if (!revealElements.length) return;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const observerOptions = {
     root: null,
@@ -565,9 +567,14 @@ function initScrollReveal() {
   const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach((entry, idx) => {
       if (entry.isIntersecting) {
-        setTimeout(() => {
+        const reveal = () => {
           entry.target.classList.add('is-revealed');
-        }, idx * 40);
+        };
+        if (prefersReducedMotion) {
+          reveal();
+        } else {
+          setTimeout(reveal, idx * 40);
+        }
         obs.unobserve(entry.target);
       }
     });
@@ -577,7 +584,151 @@ function initScrollReveal() {
 }
 
 /* ==========================================================================
-   4. PLACEHOLDER LINK SAFETY HANDLER
+   4. VANILLA GLASS SKILL FOLDERS
+   ========================================================================== */
+function initGlassFolders() {
+  const folders = Array.from(document.querySelectorAll('.gf-root'));
+  if (!folders.length) return;
+
+  const W = 340;
+  const H = 272;
+  const HEADROOM = 54;
+  const FRONT_TOP = 74;
+  const FRONT_H = H - FRONT_TOP;
+  const SHEET_W = 272;
+  const SHEET_H = 184;
+  const BACK_PATH = 'M0 56A22 22 0 0 1 22 34L146 34C170 34 172 0 198 0L318 0A22 22 0 0 1 340 22L340 250A22 22 0 0 1 318 272L22 272A22 22 0 0 1 0 250Z';
+  const FRONT_PATH = 'M0 22A22 22 0 0 1 22 0L118 0C144 0 146 32 172 32L318 32A22 22 0 0 1 340 54L340 ' + (FRONT_H - 22) + 'A22 22 0 0 1 318 ' + FRONT_H + 'L22 ' + FRONT_H + 'A22 22 0 0 1 0 ' + (FRONT_H - 22) + 'Z';
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const jitterX = [-3.2, 1.8, -1.1, 3.4, 0.4];
+  const jitterR = [-1.1, 0.65, -0.4, 1.3, 0];
+  let openFolder = null;
+
+  function setFolderOpen(root, open, returnFocus = false) {
+    const button = root.querySelector('.gf-hit');
+    const files = root.querySelector('.gf-files');
+    const label = root.dataset.folder;
+    const count = root.dataset.count;
+
+    if (open) {
+      folders.forEach((other) => {
+        if (other !== root && other.hasAttribute('data-open')) setFolderOpen(other, false);
+      });
+      root.setAttribute('data-open', '');
+      openFolder = root;
+    } else {
+      root.removeAttribute('data-open');
+      if (openFolder === root) openFolder = null;
+    }
+
+    button.setAttribute('aria-expanded', String(open));
+    button.setAttribute('aria-label', `${open ? 'Close' : 'Open'} ${label}, ${count} skills`);
+    files.inert = !open;
+    if (returnFocus) button.focus();
+  }
+
+  folders.forEach((root, folderIndex) => {
+    const label = root.dataset.folder;
+    const skills = (root.dataset.files || '').split('|').filter(Boolean);
+    const button = root.querySelector('.gf-hit');
+    const files = root.querySelector('.gf-files');
+
+    root.dataset.count = String(skills.length);
+    const syncScale = () => {
+      const scale = Math.min(1, root.clientWidth / W);
+      root.style.setProperty('--k', scale.toFixed(4));
+      root.style.setProperty('--gf-headroom-scaled', `${HEADROOM * scale}px`);
+      root.style.height = `${(H + HEADROOM) * scale}px`;
+    };
+    syncScale();
+    root.style.setProperty('--gf-sheet-width', `${SHEET_W}px`);
+    root.style.setProperty('--gf-sheet-height', `${SHEET_H}px`);
+    root.querySelector('.gf-back-path').setAttribute('d', BACK_PATH);
+    root.querySelector('.gf-front-path').setAttribute('d', FRONT_PATH);
+    files.setAttribute('aria-label', `${label} skills`);
+
+    skills.forEach((skill, index) => {
+      const slot = skills.length <= 1 ? 0 : (index / (skills.length - 1)) * 2 - 1;
+      const sheet = document.createElement('div');
+      sheet.className = 'gf-sheet';
+      sheet.setAttribute('role', 'listitem');
+      sheet.setAttribute('aria-label', skill);
+      sheet.style.setProperty('--gf-slot', slot.toFixed(3));
+      sheet.style.setProperty('--gf-depth', String(skills.length - 1 - index));
+      sheet.style.setProperty('--gf-jx', `${jitterX[index % jitterX.length]}px`);
+      sheet.style.setProperty('--gf-jr', `${jitterR[index % jitterR.length]}deg`);
+
+      const lines = document.createElement('span');
+      lines.className = 'gf-lines';
+      lines.setAttribute('aria-hidden', 'true');
+      for (let line = 0; line < 5; line += 1) lines.appendChild(document.createElement('i'));
+
+      const heading = document.createElement('span');
+      heading.className = 'gf-sheet-head';
+      const name = document.createElement('span');
+      name.className = 'gf-sheet-name';
+      name.textContent = skill;
+      heading.appendChild(name);
+      sheet.append(lines, heading);
+      files.appendChild(sheet);
+    });
+
+    button.setAttribute('aria-label', `Open ${label}, ${skills.length} skills`);
+    button.addEventListener('click', () => setFolderOpen(root, !root.hasAttribute('data-open')));
+
+    if (reducedMotion || !('IntersectionObserver' in window)) root.setAttribute('data-entered', '');
+
+    let pointerFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+    const updateParallax = () => {
+      pointerFrame = 0;
+      root.style.setProperty('--gf-px', pointerX.toFixed(3));
+      root.style.setProperty('--gf-py', pointerY.toFixed(3));
+    };
+    root.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      const rect = root.getBoundingClientRect();
+      pointerX = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
+      pointerY = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
+      if (!pointerFrame) pointerFrame = requestAnimationFrame(updateParallax);
+    }, { passive: true });
+    root.addEventListener('pointerleave', () => {
+      pointerX = 0;
+      pointerY = 0;
+      if (!pointerFrame) pointerFrame = requestAnimationFrame(updateParallax);
+    }, { passive: true });
+
+    if ('ResizeObserver' in window) {
+      const resizeObserver = new ResizeObserver(() => {
+        syncScale();
+      });
+      resizeObserver.observe(root);
+    }
+
+    if (!reducedMotion && 'IntersectionObserver' in window) {
+      const entranceObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(root);
+          window.setTimeout(() => root.setAttribute('data-entered', ''), folderIndex * 140);
+        });
+      }, { threshold: 0.25 });
+      entranceObserver.observe(root);
+    }
+  });
+
+  document.addEventListener('pointerdown', (event) => {
+    if (openFolder && !openFolder.contains(event.target)) setFolderOpen(openFolder, false);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && openFolder) setFolderOpen(openFolder, false, true);
+  });
+}
+
+/* ==========================================================================
+   5. PLACEHOLDER LINK SAFETY HANDLER
    ========================================================================== */
 function initPlaceholderLinks() {
   const placeholderLinks = document.querySelectorAll('a[href="#"]');
