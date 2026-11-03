@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMagneticCursor();
   initScrollReveal();
   initGlassFolders();
+  initExpandableCapabilityCards();
   initPlaceholderLinks();
   initContactSection();
 });
@@ -828,7 +829,7 @@ function initGlassFolders() {
 
   const W = 340;
   const H = 272;
-  const HEADROOM = 54;
+  const HEADROOM = 20;
   const FRONT_TOP = 74;
   const FRONT_H = H - FRONT_TOP;
   const SHEET_W = 272;
@@ -871,7 +872,8 @@ function initGlassFolders() {
 
     root.dataset.count = String(skills.length);
     const syncScale = () => {
-      const scale = Math.min(1, root.clientWidth / W);
+      const measuredWidth = root.getBoundingClientRect().width || root.clientWidth;
+      const scale = Math.max(0.01, Math.min(1, (measuredWidth || W) / W));
       root.style.setProperty('--k', scale.toFixed(4));
       root.style.setProperty('--gf-headroom-scaled', `${HEADROOM * scale}px`);
       root.style.height = `${(H + HEADROOM) * scale}px`;
@@ -949,9 +951,19 @@ function initGlassFolders() {
           observer.unobserve(root);
           window.setTimeout(() => root.setAttribute('data-entered', ''), folderIndex * 140);
         });
-      }, { threshold: 0.25 });
+      }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
       entranceObserver.observe(root);
     }
+
+    window.setTimeout(() => {
+      const rect = root.getBoundingClientRect();
+      const hasZeroSize = rect.width === 0 || rect.height === 0;
+      const inViewport = rect.bottom > 0 && rect.top < window.innerHeight;
+      if (hasZeroSize || inViewport) {
+        root.setAttribute('data-entered', '');
+        root.classList.add('is-revealed');
+      }
+    }, 1500);
   });
 
   document.addEventListener('pointerdown', (event) => {
@@ -974,6 +986,54 @@ function initPlaceholderLinks() {
       console.info('Placeholder link clicked: configure URL in index.html when available.');
     });
   });
+}
+
+function initExpandableCapabilityCards() {
+  const row = document.querySelector('.capabilities-grid');
+  const panels = Array.from(document.querySelectorAll('[data-capability]'));
+  if (!row || !panels.length) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let active = Math.max(0, panels.findIndex((panel) => panel.getAttribute('aria-expanded') === 'true'));
+  let stoppedByUser = false;
+  let hovered = false;
+  let focused = false;
+  let inView = true;
+  let timer = 0;
+
+  const activate = (index) => {
+    active = (index + panels.length) % panels.length;
+    panels.forEach((panel, i) => panel.setAttribute('aria-expanded', String(i === active)));
+  };
+  const schedule = () => {
+    window.clearTimeout(timer);
+    if (reduced || stoppedByUser || hovered || focused || !inView || document.hidden) return;
+    timer = window.setTimeout(() => { activate(active + 1); schedule(); }, 3500);
+  };
+
+  panels.forEach((panel, index) => {
+    panel.addEventListener('pointerenter', (event) => {
+      if (event.pointerType === 'mouse') activate(index);
+    });
+    panel.addEventListener('focus', () => { focused = true; activate(index); schedule(); });
+    panel.addEventListener('blur', () => { window.setTimeout(() => { focused = row.contains(document.activeElement); schedule(); }, 0); });
+    panel.addEventListener('click', () => { stoppedByUser = true; window.clearTimeout(timer); activate(index); });
+    panel.addEventListener('keydown', (event) => {
+      const mobile = window.matchMedia('(max-width: 600px)').matches;
+      const forward = mobile ? 'ArrowDown' : 'ArrowRight';
+      const backward = mobile ? 'ArrowUp' : 'ArrowLeft';
+      if (event.key !== forward && event.key !== backward) return;
+      event.preventDefault();
+      const next = (index + (event.key === forward ? 1 : -1) + panels.length) % panels.length;
+      panels[next].focus();
+    });
+  });
+  row.addEventListener('pointerenter', (event) => { if (event.pointerType === 'mouse') { hovered = true; schedule(); } });
+  row.addEventListener('pointerleave', () => { hovered = false; schedule(); });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; schedule(); }, { threshold: 0.15 }).observe(row);
+  }
+  document.addEventListener('visibilitychange', schedule);
+  schedule();
 }
 
 /* ==========================================================================
