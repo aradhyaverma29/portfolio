@@ -50,6 +50,7 @@ html {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overflow-x: clip;
   font-size: 16px;
   scroll-behavior: smooth;
   background-color: var(--bg);
@@ -64,6 +65,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-body);
   line-height: 1.6;
   background-color: var(--bg);
@@ -248,7 +250,7 @@ body.cursor-hover .custom-cursor-dot {
   max-width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow: visible;
 }
 
 .section-container {
@@ -1320,6 +1322,34 @@ body.cursor-hover .custom-cursor-dot {
   .capability-panel[aria-expanded="true"] .capability-content { opacity:1; transform:none; }
 }
 
+/* Projects scroll stack */
+.projects-list.is-stacked { gap: 0; }
+.scroll-stack__inner { position: relative; }
+.scroll-stack__hint {
+  margin-top: .8rem;
+  color: var(--soft);
+  font-size: .78rem;
+  letter-spacing: .02em;
+}
+.scroll-stack__slot { position: sticky; }
+.scroll-stack-card {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 8px;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+.scroll-stack-card__shade {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bg);
+  opacity: var(--scroll-stack-dim, 0);
+  pointer-events: none;
+  z-index: 3;
+}
+
 .skill-stat-card {
   display: flex;
   flex-direction: column;
@@ -1574,29 +1604,68 @@ body.cursor-hover .custom-cursor-dot {
 /* --------------------------------------------------------------------------
    11. Section 6: Beyond the Code
    -------------------------------------------------------------------------- */
-.beyond-grid {
+.beyond-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: minmax(240px, .78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+}
+.beyond-intro { margin-bottom: 0; }
+.beyond-swap {
+  position: relative;
   width: 100%;
+  height: clamp(330px, 31vw, 390px);
+  perspective: 1100px;
+  outline: none;
+}
+.beyond-swap:focus-visible { outline: 2px solid var(--soft); outline-offset: 6px; border-radius: 18px; }
+.beyond-grid {
+  position: relative;
+  display: block;
+  height: calc(100% - 30px);
+  width: 100%;
+  overflow: visible;
+}
+.beyond-swap-hint {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  color: var(--soft);
+  font: 500 .64rem var(--font-mono);
+  letter-spacing: .04em;
+  text-align: center;
 }
 
 .beyond-card {
+  position: absolute;
+  inset: 18px 54px 24px 0;
+  width: auto;
+  min-width: 0;
+  cursor: pointer;
   background: var(--secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: 18px;
   padding: clamp(1.25rem, 2.8vw, 2.25rem);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  width: 100%;
   box-sizing: border-box;
-  transition: all var(--transition-normal);
+  transform-origin: top left;
+  transition: transform .7s cubic-bezier(.2,.8,.2,1), opacity .5s ease, border-color var(--transition-normal), box-shadow var(--transition-normal), background var(--transition-normal);
+}
+.beyond-card[data-swap-position="0"] { z-index: 3; opacity: 1; transform: translate3d(0,0,0) scale(1); }
+.beyond-card[data-swap-position="1"] { z-index: 2; opacity: .82; transform: translate3d(22px,-18px,0) scale(.95); }
+.beyond-card[data-swap-position="2"] { z-index: 1; opacity: .64; transform: translate3d(44px,-36px,0) scale(.9); }
+.beyond-card[aria-pressed="true"] { box-shadow: 0 22px 48px rgba(var(--bg-rgb), .46), inset 0 1px 0 rgba(var(--soft-rgb), .12); }
+.beyond-card:focus-visible { outline: 2px solid var(--soft); outline-offset: 4px; }
+.beyond-swap:hover .beyond-card[data-swap-position="0"] {
+  box-shadow: 0 24px 54px rgba(var(--primary-rgb), .25), inset 0 1px 0 rgba(var(--soft-rgb), .12);
 }
 
 .beyond-card:hover {
   border-color: var(--border-accent);
-  transform: translateY(-3px);
   background: var(--secondary);
 }
 
@@ -1868,6 +1937,7 @@ body.cursor-hover .custom-cursor-dot {
   }
 
   .gf-grid { --folder-w: 400px; column-gap: 16px; }
+  .beyond-layout { grid-template-columns: minmax(190px, .72fr) minmax(0, 1.28fr); gap: 2rem; }
 
   .luxury-nav-header {
     top: 1.25rem;
@@ -2004,6 +2074,11 @@ body.cursor-hover .custom-cursor-dot {
   .beyond-card {
     padding: 1.25rem 1rem;
   }
+
+  .beyond-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+  .beyond-intro { text-align: left; }
+  .beyond-swap { height: 330px; }
+  .beyond-card { inset: 18px 42px 24px 0; }
 
   /* Achievement rating boxes stack cleanly without overflow */
   .rating-blocks-row {

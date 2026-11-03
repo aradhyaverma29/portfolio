@@ -93,11 +93,188 @@ document.addEventListener('DOMContentLoaded', () => {
   initCharacterCanvas();
   initMagneticCursor();
   initScrollReveal();
+  initScrollStack();
   initGlassFolders();
   initExpandableCapabilityCards();
+  initBeyondCardSwap();
   initPlaceholderLinks();
   initContactSection();
 });
+
+function initScrollStack() {
+  const root = document.querySelector('#projects .projects-list');
+  if (!root || root.dataset.scrollStackReady === 'true') return;
+  root.dataset.scrollStackReady = 'true';
+  const config = { itemDistance: 80, itemStackDistance: 28, stackPosition: '16%', itemScale: 0.05, baseScale: 0.85, dimAmount: 0.25, blurAmount: 0, tiltAmount: 0, rotationAmount: 0, holdDistance: 160 };
+  const widthQuery = window.matchMedia('(min-width: 900px)');
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const header = document.querySelector('#projects .section-header');
+  const originalNodes = Array.from(root.childNodes);
+  const items = originalNodes.filter((node) => node.nodeType === Node.ELEMENT_NODE && node.matches('.project-card'));
+  if (!items.length) { delete root.dataset.scrollStackReady; return; }
+
+  let active = false;
+  let frame = 0;
+  let observer = null;
+  let cache = null;
+  let inner = null;
+  let end = null;
+  let scrollHandler = null;
+  let resizeHandler = null;
+  let schedule = null;
+
+  const resolveOffset = (value, size) => {
+    if (typeof value === 'number') return value;
+    const text = String(value).trim();
+    if (text.endsWith('%')) return (parseFloat(text) / 100) * size;
+    return parseFloat(text) || 0;
+  };
+  const toLength = (value) => typeof value === 'number' ? `${value}px` : value;
+  const write = (key, value, apply) => {
+    if (cache.get(key) === value) return false;
+    cache.set(key, value);
+    apply(value);
+    return true;
+  };
+
+  const setup = () => {
+    if (active || !widthQuery.matches || motionQuery.matches) return;
+    active = true;
+    cache = new Map();
+    root.classList.add('scroll-stack', 'scroll-stack--window', 'is-stacked');
+    inner = document.createElement('div');
+    inner.className = 'scroll-stack__inner';
+
+    items.forEach((item, index) => {
+      if (index > 0) {
+        const gap = config.itemDistance - (items.length - index) * config.itemStackDistance;
+        const spacer = document.createElement('div');
+        spacer.setAttribute('aria-hidden', 'true');
+        spacer.style.height = `${Math.max(0, gap)}px`;
+        spacer.style.marginTop = `${Math.min(0, gap)}px`;
+        inner.appendChild(spacer);
+      }
+      const slot = document.createElement('div');
+      slot.className = 'scroll-stack__slot';
+      slot.setAttribute('data-stack-slot', '');
+      slot.style.top = `calc(${toLength(config.stackPosition)} + ${index * config.itemStackDistance}px)`;
+      slot.style.marginBottom = `${(items.length - 1 - index) * config.itemStackDistance}px`;
+      slot.style.zIndex = String(index + 1);
+
+      const card = document.createElement('div');
+      card.className = 'scroll-stack-card';
+      const shade = document.createElement('span');
+      shade.className = 'scroll-stack-card__shade';
+      shade.setAttribute('aria-hidden', 'true');
+      card.append(item, shade);
+      slot.appendChild(card);
+      inner.appendChild(slot);
+    });
+
+    end = document.createElement('div');
+    end.className = 'scroll-stack__end';
+    end.setAttribute('aria-hidden', 'true');
+    inner.appendChild(end);
+    root.replaceChildren(inner);
+
+    const update = () => {
+      frame = 0;
+      if (!active || !inner || !end) return;
+      const slots = Array.from(inner.children).filter((child) => child.hasAttribute('data-stack-slot'));
+      if (!slots.length) return;
+      const viewHeight = window.innerHeight;
+      const stackTop = resolveOffset(config.stackPosition, viewHeight);
+      const offset = config.itemStackDistance;
+      const heights = slots.map((slot) => slot.offsetHeight);
+      const tops = slots.map((slot) => slot.getBoundingClientRect().top);
+      const lastPin = stackTop + (slots.length - 1) * offset;
+      const padTop = 0;
+      const endHeight = config.holdDistance;
+      let moved = write('padTop', padTop, (value) => { inner.style.paddingTop = `${value}px`; });
+      moved = write('endHeight', endHeight, (value) => { end.style.height = `${value}px`; }) || moved;
+      const depths = slots.map(() => 0);
+      let lastCover = 0;
+      for (let j = 1; j < slots.length; j += 1) {
+        const pinBefore = stackTop + (j - 1) * offset;
+        const start = pinBefore + heights[j - 1];
+        const span = Math.max(1, start - pinBefore - offset);
+        const cover = Math.min(1, Math.max(0, (start - tops[j]) / span));
+        for (let i = 0; i < j; i += 1) depths[i] += cover;
+        lastCover = cover;
+      }
+      void lastPin;
+      void lastCover;
+
+      const dimStep = Math.min(Math.max(config.dimAmount, 0), 1);
+      slots.forEach((slot, index) => {
+        const card = slot.firstElementChild;
+        if (!card) return;
+        const depth = depths[index];
+        const lean = Math.min(depth, 1);
+        const scale = Math.max(Math.min(config.baseScale, 1), 1 - depth * config.itemScale);
+        const tilt = -lean * config.tiltAmount;
+        const turn = lean * config.rotationAmount * (index % 2 ? -1 : 1);
+        const blur = depth * config.blurAmount;
+        const dim = 1 - Math.pow(1 - dimStep, depth);
+        const transform = depth < 0.0005 ? '' : `perspective(1200px) rotateX(${tilt.toFixed(2)}deg) rotate(${turn.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
+        write(`transform${index}`, transform, (value) => { card.style.transform = value; });
+        write(`filter${index}`, blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : '', (value) => { card.style.filter = value; });
+        write(`dim${index}`, dim.toFixed(3), (value) => { card.style.setProperty('--scroll-stack-dim', value); });
+      });
+      if (moved) schedule();
+    };
+    schedule = () => {
+      if (!active || frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+    scrollHandler = schedule;
+    resizeHandler = schedule;
+    observer = 'ResizeObserver' in window ? new ResizeObserver(schedule) : null;
+    observer?.observe(root);
+    observer?.observe(inner);
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+    window.addEventListener('resize', resizeHandler);
+    schedule();
+  };
+
+  const teardown = () => {
+    if (!active) return;
+    active = false;
+    if (frame) window.cancelAnimationFrame(frame);
+    frame = 0;
+    observer?.disconnect();
+    observer = null;
+    window.removeEventListener('scroll', scrollHandler);
+    window.removeEventListener('resize', resizeHandler);
+    scrollHandler = null;
+    resizeHandler = null;
+    schedule = null;
+    inner = null;
+    end = null;
+    root.replaceChildren();
+    originalNodes.forEach((node) => root.appendChild(node));
+    root.classList.remove('scroll-stack', 'scroll-stack--window', 'is-stacked');
+    cache = null;
+  };
+
+  const sync = () => {
+    if (widthQuery.matches && !motionQuery.matches) setup();
+    else teardown();
+  };
+  if (header && !header.querySelector('.scroll-stack__hint')) {
+    const hint = document.createElement('p');
+    hint.className = 'scroll-stack__hint';
+    hint.textContent = 'Scroll to explore the projects; each card stacks as the next arrives.';
+    header.appendChild(hint);
+  }
+  const listen = (query) => {
+    if (query.addEventListener) query.addEventListener('change', sync);
+    else query.addListener(sync);
+  };
+  listen(widthQuery);
+  listen(motionQuery);
+  sync();
+}
 
 function initContactSection() {
   const section = document.getElementById('contact');
@@ -1031,6 +1208,77 @@ function initExpandableCapabilityCards() {
   row.addEventListener('pointerleave', () => { hovered = false; schedule(); });
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; schedule(); }, { threshold: 0.15 }).observe(row);
+  }
+  document.addEventListener('visibilitychange', schedule);
+  schedule();
+}
+
+function initBeyondCardSwap() {
+  const region = document.querySelector('.beyond-swap');
+  if (!region) return;
+  const cards = Array.from(region.querySelectorAll('[data-swap-card]'));
+  if (cards.length < 2) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let inView = !('IntersectionObserver' in window);
+  let hovered = false;
+  let focused = false;
+  let timer = 0;
+
+  const paint = () => {
+    cards.forEach((card, index) => {
+      card.dataset.swapPosition = String(index);
+      card.setAttribute('aria-pressed', String(index === 0));
+    });
+  };
+  const schedule = () => {
+    window.clearTimeout(timer);
+    if (reducedMotion || hovered || focused || !inView || document.hidden) return;
+    timer = window.setTimeout(() => {
+      cards.push(cards.shift());
+      paint();
+      schedule();
+    }, 4000);
+  };
+  const promote = (card) => {
+    const index = cards.indexOf(card);
+    if (index <= 0) return;
+    cards.unshift(cards.splice(index, 1)[0]);
+    paint();
+    schedule();
+  };
+
+  cards.forEach((card, index) => {
+    card.dataset.swapPosition = String(index);
+    card.addEventListener('click', () => promote(card));
+  });
+  paint();
+  region.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'touch') { hovered = true; schedule(); }
+  });
+  region.addEventListener('pointerleave', () => { hovered = false; schedule(); });
+  region.addEventListener('focusin', () => { focused = true; schedule(); });
+  region.addEventListener('focusout', () => {
+    window.setTimeout(() => { focused = region.contains(document.activeElement); schedule(); }, 0);
+  });
+  region.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      cards.push(cards.shift());
+      paint();
+      schedule();
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      cards.unshift(cards.pop());
+      paint();
+      schedule();
+    } else if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('[data-swap-card]')) {
+      event.preventDefault();
+      promote(event.target.closest('[data-swap-card]'));
+    }
+  });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; schedule(); }, { threshold: 0.1 }).observe(region);
   }
   document.addEventListener('visibilitychange', schedule);
   schedule();
