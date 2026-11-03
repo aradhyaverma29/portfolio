@@ -6,15 +6,15 @@
   <title>Aradhya Verma — Frontend Developer &amp; UI/UX Designer</title>
   <meta name="description" content="Portfolio of Aradhya Verma — Frontend developer, UI/UX designer, and IT student at IIIT Lucknow.">
 
-  <!-- Google Fonts: Syne (Editorial Headings), Space Grotesk (Body), JetBrains Mono (Technical Accents) -->
+  <!-- Google Fonts: Dancing Script (Hero Script), Inter (Hero & Clean UI), Syne, Space Grotesk, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-  <!-- Custom Cursor Elements -->
+  <!-- Custom Magnetic Cursor Elements -->
   <div class="custom-cursor-dot" id="cursor-dot" aria-hidden="true"></div>
   <div class="custom-cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
@@ -22,93 +22,47 @@
   <div class="bg-noise" aria-hidden="true"></div>
   <div class="ambient-glow" aria-hidden="true"></div>
 
-  <!-- Site Navigation -->
-  <header class="site-header" id="header">
-    <div class="header-inner">
-      <a href="#hero" class="brand-mark" aria-label="Aradhya Verma Home">
-        <span class="brand-monogram">AV</span>
-        <span class="brand-role">IIIT LUCKNOW</span>
-      </a>
-
-      <div class="status-indicator" aria-label="Academic &amp; Project Status">
-        <span class="status-pulse"></span>
-        <span class="status-text">B.Tech IT &bull; Designing &amp; Coding</span>
-      </div>
-
-      <nav class="nav-links" aria-label="Main Navigation">
-        <a href="#about" class="nav-link"><span class="nav-num">01</span> About</a>
-        <a href="#projects" class="nav-link"><span class="nav-num">02</span> Projects</a>
-        <a href="#skills" class="nav-link"><span class="nav-num">03</span> Skills</a>
-        <a href="#education" class="nav-link"><span class="nav-num">04</span> Education</a>
-        <a href="#beyond" class="nav-link"><span class="nav-num">05</span> Beyond</a>
-        <a href="#contact" class="nav-link"><span class="nav-num">06</span> Contact</a>
-      </nav>
-
-      <a href="#contact" class="header-cta-btn">Let's Talk</a>
-    </div>
+  <!-- Floating Frosted Glass Navigation Pill -->
+  <header class="luxury-nav-header" id="header">
+    <nav class="nav-pill-container" aria-label="Main Navigation">
+      <a href="#projects" class="nav-pill-item" data-magnetic>WORK</a>
+      <a href="#about" class="nav-pill-item" data-magnetic>ABOUT</a>
+      <a href="#contact" class="nav-pill-item" data-magnetic>CONTACT</a>
+    </nav>
   </header>
 
   <main id="main-content">
     <!-- ======================================================================
-         SECTION 1: HERO
+         SECTION 1: HERO (Interactive 60 FPS Character Canvas)
          ====================================================================== -->
-    <section class="hero-section" id="hero">
-      <div class="hero-container">
-        <!-- Top Meta Line -->
-        <div class="hero-meta reveal-item">
-          <div class="meta-tag">
-            <span class="tag-bracket">[</span>
-            <span class="tag-label">PORTFOLIO &bull; 2025–2029</span>
-            <span class="tag-bracket">]</span>
-          </div>
-          <div class="meta-location">
-            <span>IIIT LUCKNOW</span>
-            <span class="meta-separator">/</span>
-            <span>DESIGN &times; CODE</span>
-          </div>
-        </div>
+    <section class="hero-stage" id="hero" aria-label="Hero Section">
+      <!-- Loading State -->
+      <div class="hero-canvas-loader" id="canvas-loader" aria-live="polite">
+        <div class="loader-spinner" aria-hidden="true"></div>
+        <span class="loader-text">INITIALIZING INTERFACE</span>
+      </div>
 
-        <!-- Huge Editorial Name -->
-        <div class="hero-title-wrapper">
-          <h1 class="hero-title">
-            <span class="title-row title-row-top reveal-item"><span class="letter-accent">A</span>RADHYA</span>
-            <span class="title-row title-row-bottom reveal-item">VERMA<span class="accent-period">.</span></span>
+      <!-- Character 60 FPS Canvas -->
+      <canvas id="character-canvas" class="character-canvas" aria-label="Animated portrait of the character following the cursor" role="img"></canvas>
+
+      <!-- Hero Typography (Bottom-Left) -->
+      <div class="hero-content-overlay">
+        <div class="hero-editorial-group">
+          <p class="hero-greeting">Hi, I'm</p>
+          <h1 class="hero-name">
+            <span class="name-part">Aradhya</span> <span class="name-part">Verma</span>
           </h1>
-        </div>
-
-        <!-- Hero Positioning Statement & Subtext -->
-        <div class="hero-statement-wrapper reveal-item">
-          <div class="statement-bracket-box">
-            <span class="statement-quote">[ welcome to my world ]</span>
-          </div>
-          <div class="hero-copy-block">
-            <p class="hero-primary-statement">
-              I design interfaces people enjoy and build them in code.
-            </p>
-            <p class="hero-subtext">
-              Frontend developer &bull; UI/UX designer &bull; IT student at IIIT Lucknow
-            </p>
-          </div>
-        </div>
-
-        <!-- Hero Footer / Bottom Bar -->
-        <div class="hero-footer reveal-item">
-          <a href="#about" class="hero-scroll-cue" aria-label="Scroll to About section">
-            <div class="scroll-track">
-              <div class="scroll-thumb"></div>
-            </div>
-            <span class="scroll-text">EXPLORE WORK</span>
-          </a>
-
-          <div class="hero-quick-stats">
-            <div class="stat-pill">
-              <span class="stat-accent">&curren;</span>
-              <span>UI/UX DESIGN</span>
-            </div>
-            <div class="stat-pill">
-              <span class="stat-accent">&plus;</span>
-              <span>FRONTEND CODE</span>
-            </div>
+          <p class="hero-bio">
+            Frontend developer and UI/UX designer. I turn ideas into fast, responsive interfaces with React and Tailwind. IT student at IIIT Lucknow.
+          </p>
+          <div class="hero-actions-row">
+            <a href="https://drive.google.com/file/d/1_RW8cJd30X2lNEQdPEmzVFVl4_lho9Ed/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="hero-btn hero-btn-solid" aria-label="Resume (opens in new tab)" data-magnetic>
+              <span>Resume</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </a>
+            <a href="#contact" class="hero-btn hero-btn-glass" aria-label="Let's Talk (navigate to contact)" data-magnetic>
+              <span>Let's Talk</span>
+            </a>
           </div>
         </div>
       </div>

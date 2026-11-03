@@ -1,0 +1,121 @@
+{
+  "width": 985,
+  "height": 720,
+  "aspectRatio": 1.3681,
+  "backgroundColor": "#f20601",
+  "center": "center.webp",
+  "poses": [
+    {
+      "id": 0,
+      "file": "pose_00.webp",
+      "angle": 1.4,
+      "label": "UP",
+      "sourceFrame": 22
+    },
+    {
+      "id": 1,
+      "file": "pose_01.webp",
+      "angle": 24.3,
+      "label": "NNE",
+      "sourceFrame": 43
+    },
+    {
+      "id": 2,
+      "file": "pose_02.webp",
+      "angle": 52.4,
+      "label": "UP-RIGHT",
+      "sourceFrame": 50
+    },
+    {
+      "id": 3,
+      "file": "pose_03.webp",
+      "angle": 121.0,
+      "label": "ESE-DR",
+      "sourceFrame": 68
+    },
+    {
+      "id": 4,
+      "file": "pose_06.webp",
+      "angle": 135.0,
+      "label": "DOWN-RIGHT",
+      "sourceFrame": 72
+    },
+    {
+      "id": 5,
+      "file": "pose_07.webp",
+      "angle": 156.6,
+      "label": "SSE",
+      "sourceFrame": 103
+    },
+    {
+      "id": 6,
+      "file": "pose_08.webp",
+      "angle": 182.3,
+      "label": "DOWN",
+      "sourceFrame": 107
+    },
+    {
+      "id": 7,
+      "file": "pose_09.webp",
+      "angle": 205.8,
+      "label": "SSW",
+      "sourceFrame": 110
+    },
+    {
+      "id": 8,
+      "file": "pose_10.webp",
+      "angle": 213.2,
+      "label": "DOWN-LEFT",
+      "sourceFrame": 111
+    },
+    {
+      "id": 9,
+      "file": "pose_11.webp",
+      "angle": 270.0,
+      "label": "LEFT",
+      "sourceFrame": 204
+    },
+    {
+      "id": 10,
+      "file": "pose_12.webp",
+      "angle": 282.1,
+      "label": "WNW",
+      "sourceFrame": 207
+    },
+    {
+      "id": 11,
+      "file": "pose_13.webp",
+      "angle": 298.3,
+      "label": "UP-LEFT-1",
+      "sourceFrame": 208
+    },
+    {
+      "id": 12,
+      "file": "pose_14.webp",
+      "angle": 309.8,
+      "label": "UP-LEFT-2",
+      "sourceFrame": 209
+    },
+    {
+      "id": 13,
+      "file": "pose_15.webp",
+      "angle": 324.5,
+      "label": "UP-LEFT-3",
+      "sourceFrame": 210
+    },
+    {
+      "id": 14,
+      "file": "pose_16.webp",
+      "angle": 348.3,
+      "label": "NNW",
+      "sourceFrame": 211
+    },
+    {
+      "id": 15,
+      "file": "pose_17.webp",
+      "angle": 356.9,
+      "label": "NNW-UP",
+      "sourceFrame": 213
+    }
+  ]
+}
